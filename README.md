@@ -1,18 +1,13 @@
 # imei_plugin
 
-get info imei device
+Returns the IMEI (International Mobile Equipment Identity). Return null if IMEI is not available.
 
 ## Getting Started
 
 get imei for android device
 
-validate permisions on time ejecution
-```
-android.permission.READ_PHONE_STATE
-```
-
-then
-```
+use
+```dart
 import 'package:imei_plugin/imei_plugin.dart';
 
 imei = await ImeiPlugin.getImei;

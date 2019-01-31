@@ -1,5 +1,5 @@
 name: imei_plugin
-description: get info imei device
+description: get IMEI (International Mobile Equipment Identity) for android devices with validate permission on ejecution time
 version: 1.0.0
 author: ing.sys.kevincaicedo@gmail.com
 homepage: https://github.com/kevincaicedo/imei_plugin

@@ -1,16 +1,14 @@
-# imei_plugin_example
+# imei_plugin
 
-Demonstrates how to use the imei_plugin plugin.
+Returns the IMEI (International Mobile Equipment Identity). Return null if IMEI is not available.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+get imei for android devices with validate permission on ejecution time
 
-A few resources to get you started if this is your first Flutter project:
+use
+```dart
+import 'package:imei_plugin/imei_plugin.dart';
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+var imei = await ImeiPlugin.getImei;
+```

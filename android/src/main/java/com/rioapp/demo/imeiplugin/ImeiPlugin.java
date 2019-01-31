@@ -51,7 +51,12 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
                     result.success( telephonyManager.getDeviceId() );
 
             } else {
-                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+
+                if ( ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.READ_PHONE_STATE) )
+                    result.success("Permission Denied");
+                else
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+
             }
 
         } catch (Exception ex) {

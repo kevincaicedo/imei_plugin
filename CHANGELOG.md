@@ -1,3 +1,8 @@
+## 1.0.1
+
+- upgrade compile version
+- no request permission if user denied
+
 ## 1.0.0
 
 * TODO: Describe initial release.

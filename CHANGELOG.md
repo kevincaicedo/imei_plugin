@@ -1,3 +1,8 @@
+## 1.1.0
+
+- implemented on ios device
+- update androidx library on android
+
 ## 1.0.1
 
 - upgrade compile version

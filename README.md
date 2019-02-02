@@ -1,10 +1,11 @@
 # imei_plugin
 
-Returns the IMEI (International Mobile Equipment Identity). Return null if IMEI is not available.
+get unique id device on ios and android
 
 ## Getting Started
 
-get imei for android devices with validate permission on ejecution time
+get IMEI (International Mobile Equipment Identity) for android devices with validate permission on ejecution time and
+get unique id on ios An alphanumeric string that uniquely identifies a device to the app’s vendor.
 
 use
 ```dart

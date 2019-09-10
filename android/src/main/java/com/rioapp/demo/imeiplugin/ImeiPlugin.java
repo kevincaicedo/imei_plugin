@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import io.flutter.plugin.common.MethodCall;
@@ -23,6 +24,7 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
     private final Activity activity;
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1995;
     private Result mResult;
+    private static boolean ssrpr = false;
 
     /**
      * Plugin registration.
@@ -39,11 +41,11 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
         this.activity = activity;
     }
 
-    public static void getImei(Context context, Result result) {
+    public static void getImei(Activity activity, Result result) {
         try {
 
-            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
-            if (ContextCompat.checkSelfPermission((context), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
+            if (ContextCompat.checkSelfPermission((activity), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
+                TelephonyManager telephonyManager = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     result.success( telephonyManager.getImei() );
@@ -52,10 +54,10 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
 
             } else {
 
-                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.READ_PHONE_STATE) )
+                if (ssrpr && ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_PHONE_STATE) )
                     result.success("Permission Denied");
                 else
-                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
 
             }
 
@@ -65,30 +67,34 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
     }
 
     @Override
-    public void onMethodCall(MethodCall call, Result result) {
+    public void onMethodCall(MethodCall call, @NonNull Result result) {
         mResult = result;
 
+        try {
+            ssrpr = call.<Boolean>argument("ssrpr");
+        } catch (Exception e){
+            ssrpr = false;
+        }
+
         if (call.method.equals("getImei"))
-            getImei((Context) activity, mResult);
+            getImei(activity, mResult);
         else
             mResult.notImplemented();
 
     }
 
     @Override
-    public boolean onRequestPermissionsResult(int requestCode, String[] strings, int[] ints) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_PHONE_STATE:
-                // If request is cancelled, the result arrays are empty.
-                if (ints.length > 0 && ints[0] == PackageManager.PERMISSION_GRANTED) {
-                    getImei(activity, mResult);
-                } else {
-                    mResult.success("Permission Denied");
-                    // permission denied
-                }
-                break;
+    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_PHONE_STATE) {
+            if (results[0] == PackageManager.PERMISSION_GRANTED) {
+                getImei(activity, mResult);
+            } else {
+                mResult.success("Permission Denied");
+            }
+            return true;
         }
-        return true;
+
+        return false;
     }
 
 }

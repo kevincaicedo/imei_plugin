@@ -1,3 +1,8 @@
+## 1.1.4
+
+- New param **shouldShowRequestPermissionRationale** only Android
+- Fix bugs
+
 ## 1.1.0
 
 - implemented on ios device

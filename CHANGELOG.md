@@ -1,3 +1,8 @@
+## 1.1.6
+
+- **getId** only android
+- support androi 10
+
 ## 1.1.4
 
 - New param **shouldShowRequestPermissionRationale** only Android

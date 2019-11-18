@@ -2,7 +2,9 @@ package com.rioapp.demo.imeiplugin;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -10,6 +12,9 @@ import android.telephony.TelephonyManager;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import java.util.UUID;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -21,8 +26,12 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  * ImeiPlugin
  */
 public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPermissionsResultListener {
+
     private final Activity activity;
+    private final ContentResolver contentResolver;
+
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1995;
+    private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID_99599";
     private Result mResult;
     private static boolean ssrpr = false;
 
@@ -32,19 +41,22 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
      */
     public static void registerWith(Registrar registrar) {
         final MethodChannel channel = new MethodChannel(registrar.messenger(), "imei_plugin");
-        ImeiPlugin imeiPlugin = new ImeiPlugin(registrar.activity());
+        ImeiPlugin imeiPlugin = new ImeiPlugin(registrar.activity(), registrar.context().getContentResolver());
         channel.setMethodCallHandler(imeiPlugin);
         registrar.addRequestPermissionsResultListener(imeiPlugin);
     }
 
-    private ImeiPlugin(Activity activity) {
+    private ImeiPlugin(Activity activity, ContentResolver contentResolver) {
         this.activity = activity;
+        this.contentResolver = contentResolver;
     }
 
-    public static void getImei(Activity activity, Result result) {
+    private static void getImei(Activity activity, Result result) {
         try {
 
-            if (ContextCompat.checkSelfPermission((activity), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
+            if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.P){
+                result.success(getUUID(activity));
+            }else if (ContextCompat.checkSelfPermission((activity), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
                 TelephonyManager telephonyManager = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -66,6 +78,25 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
         }
     }
 
+    private synchronized static String getUUID(Context context) {
+
+        SharedPreferences sharedPrefs = context.getSharedPreferences(
+                PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+        String uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
+        if (uniqueID == null) {
+            uniqueID = UUID.randomUUID().toString();
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.putString(PREF_UNIQUE_ID, uniqueID);
+            editor.commit();
+        }
+
+        return uniqueID;
+    }
+
+    private static void getID(Context context, Result result){
+        result.success(getUUID(context));
+    }
+
     @Override
     public void onMethodCall(MethodCall call, @NonNull Result result) {
         mResult = result;
@@ -78,6 +109,8 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
 
         if (call.method.equals("getImei"))
             getImei(activity, mResult);
+        else if (call.method.equals("getId"))
+            getID(activity, result);
         else
             mResult.notImplemented();
 

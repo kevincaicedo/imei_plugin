@@ -13,6 +13,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformImei = 'Unknown';
+  String uniqueId = "Unknown";
 
   @override
   void initState() {
@@ -23,9 +24,11 @@ class _MyAppState extends State<MyApp> {
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     String platformImei;
+    String idunique;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       platformImei = await ImeiPlugin.getImei( shouldShowRequestPermissionRationale: false );
+      idunique = await ImeiPlugin.getId();
     } on PlatformException {
       platformImei = 'Failed to get platform version.';
     }
@@ -37,6 +40,7 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       _platformImei = platformImei;
+      uniqueId = idunique;
     });
   }
 
@@ -48,7 +52,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformImei\n'),
+          child: Text('Running on: $_platformImei\n is equal to : $uniqueId'),
         ),
       ),
     );

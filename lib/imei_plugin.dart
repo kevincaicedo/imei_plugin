@@ -12,4 +12,9 @@ class ImeiPlugin {
     final String imei = await _channel.invokeMethod('getImei', { "ssrpr": shouldShowRequestPermissionRationale });
     return imei;
   }
+
+  static Future<String> getId() async {
+    return await _channel.invokeMethod('getId');
+  }
+  
 }

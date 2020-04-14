@@ -38,6 +38,8 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
     private Result mResult;
     private static boolean ssrpr = false;
 
+    private static final String ERCODE_PERMISSIONS_DENIED = "2000";
+
     /**
      * Plugin registration.
      * add Listener Request permission
@@ -70,7 +72,7 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
             } else {
 
                 if (ssrpr && ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_PHONE_STATE) )
-                    result.success("Permission Denied");
+                    result.error(ERCODE_PERMISSIONS_DENIED,"Permission Denied", null);
                 else
                     ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
 
@@ -105,9 +107,8 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
                 }
 
             } else {
-
                 if (ssrpr && ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_PHONE_STATE) )
-                    result.success("Permission Denied");
+                    result.error(ERCODE_PERMISSIONS_DENIED,"Permission Denied", null);
                 else
                     ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_PHONE_STATE}, MY_PERMISSIONS_REQUEST_READ_PHONE_STATE_IMEI_MULTI);
 
@@ -168,7 +169,7 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
                     getImeiMulti(activity, mResult);
                 }
             } else {
-                mResult.success("Permission Denied");
+                mResult.error(ERCODE_PERMISSIONS_DENIED, "Permission Denied", null);
             }
             return true;
         }

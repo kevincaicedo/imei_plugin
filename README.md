@@ -12,8 +12,9 @@ Get IMEI (International Mobile Device Identity) for Android devices less than an
 ```dart
 import 'package:imei_plugin/imei_plugin.dart';
 
-var imei = await ImeiPlugin.getImei();
-var uuid = await ImeiPlugin.getId();
+String imei = await ImeiPlugin.getImei();
+List<String> multiImei = await ImeiPlugin.getImeiMulti(); //for double-triple SIM phones
+String uuid = await ImeiPlugin.getId();
 ```
 
 if you want to always request permission even if the user has already denied it. You can disable validation **shouldShowRequestPermissionRationale** set value in ```false```
@@ -29,6 +30,8 @@ default value is ```false```.
 - New param **shouldShowRequestPermissionRationale** only Android
 
 - **getId** only android. id generated with UUID.randomUUID()
+
+- **getImeiMulti** support for double-triple SIM phones
 
 ### Platform Support
 

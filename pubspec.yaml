@@ -5,7 +5,7 @@ author: Kevin Caicedo <ing.sys.kevincaicedo@gmail.com>
 homepage: https://github.com/kevincaicedo/imei_plugin
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:

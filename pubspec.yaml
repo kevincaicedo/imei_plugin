@@ -1,6 +1,6 @@
 name: imei_plugin
 description: get real IMEI for android devices with validate permission on ejecution time and get unique id on ios An alphanumeric string that uniquely identifies a device to the app’s vendor.
-version: 1.1.6
+version: 1.2.0
 author: Kevin Caicedo <ing.sys.kevincaicedo@gmail.com>
 homepage: https://github.com/kevincaicedo/imei_plugin
 

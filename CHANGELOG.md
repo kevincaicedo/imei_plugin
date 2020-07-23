@@ -1,3 +1,7 @@
+## 1.2.0
+
+- get multiple imei for double-triple SIM phones
+
 ## 1.1.6
 
 - **getId** only android

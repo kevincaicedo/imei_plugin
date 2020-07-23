@@ -27,7 +27,10 @@ class _MyAppState extends State<MyApp> {
     String idunique;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformImei = await ImeiPlugin.getImei( shouldShowRequestPermissionRationale: false );
+      platformImei =
+          await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
+      List<String> multiImei = await ImeiPlugin.getImeiMulti();
+      print(multiImei);
       idunique = await ImeiPlugin.getId();
     } on PlatformException {
       platformImei = 'Failed to get platform version.';

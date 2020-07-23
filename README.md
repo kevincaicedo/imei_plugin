@@ -1,6 +1,6 @@
 # Imei Plugin
 
-[ ![Build version](https://img.shields.io/badge/pub-v1.1.4-green)](https://pub.dev/packages/imei_plugin)
+[ ![Build version](https://img.shields.io/badge/pub-v1.2.0-green)](https://pub.dev/packages/imei_plugin)
 
 Get unique id device on ios and android
 

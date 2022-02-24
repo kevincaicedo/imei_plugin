@@ -12,7 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformImei = 'Unknown';
+  String _imei = 'Unknown';
   String uniqueId = "Unknown";
 
   @override
@@ -23,17 +23,18 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformImei;
+    String imei;
     String idunique;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformImei =
-          await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
-      List<String> multiImei = await ImeiPlugin.getImeiMulti();
+      imei =
+          (await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false))!;
+      List<String> multiImei = (await ImeiPlugin.getImeiMulti())!;
       print(multiImei);
-      idunique = await ImeiPlugin.getId();
+      idunique = (await ImeiPlugin.getId())!;
     } on PlatformException {
-      platformImei = 'Failed to get platform version.';
+      imei = 'Failed to get platform version.';
+      idunique = 'Failed to get platform version.';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -42,7 +43,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformImei = platformImei;
+      _imei = imei;
       uniqueId = idunique;
     });
   }
@@ -55,7 +56,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformImei\n is equal to : $uniqueId'),
+          child: Text('Device Unique ID: $uniqueId\n Device Unique IMEI: $_imei'),
         ),
       ),
     );

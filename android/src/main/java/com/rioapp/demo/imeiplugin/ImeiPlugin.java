@@ -2,7 +2,6 @@ package com.rioapp.demo.imeiplugin;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -13,47 +12,41 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * ImeiPlugin
  */
-public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPermissionsResultListener {
+    public class ImeiPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.RequestPermissionsResultListener {
+    private MethodChannel channel;
+    private Activity activity;
+    private ActivityPluginBinding pluginBinding;
 
-    private final Activity activity;
-    private final ContentResolver contentResolver;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1995;
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE_IMEI_MULTI = 1997;
     private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID_99599";
     private Result mResult;
     private static boolean ssrpr = false;
-
     private static final String ERCODE_PERMISSIONS_DENIED = "2000";
 
-    /**
-     * Plugin registration.
-     * add Listener Request permission
-     */
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "imei_plugin");
-        ImeiPlugin imeiPlugin = new ImeiPlugin(registrar.activity(), registrar.context().getContentResolver());
-        channel.setMethodCallHandler(imeiPlugin);
-        registrar.addRequestPermissionsResultListener(imeiPlugin);
-    }
-
-    private ImeiPlugin(Activity activity, ContentResolver contentResolver) {
-        this.activity = activity;
-        this.contentResolver = contentResolver;
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        channel = new MethodChannel(binding.getBinaryMessenger(), "imei_plugin");
+        channel.setMethodCallHandler(this);
     }
 
     private static void getImei(Activity activity, Result result) {
@@ -120,7 +113,6 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
     }
 
     private synchronized static String getUUID(Context context) {
-
         SharedPreferences sharedPrefs = context.getSharedPreferences(
                 PREF_UNIQUE_ID, Context.MODE_PRIVATE);
         String uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
@@ -139,7 +131,7 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
     }
 
     @Override
-    public void onMethodCall(MethodCall call, @NonNull Result result) {
+    public void onMethodCall(@NotNull MethodCall call, @NonNull Result result) {
         mResult = result;
 
         try {
@@ -148,14 +140,20 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
             ssrpr = false;
         }
 
-        if (call.method.equals("getImei"))
-            getImei(activity, mResult);
-        else if (call.method.equals("getImeiMulti"))
-            getImeiMulti(activity, result);
-        else if (call.method.equals("getId"))
-            getID(activity, result);
-        else
-            mResult.notImplemented();
+        switch (call.method) {
+            case "getImei":
+                getImei(activity, mResult);
+                break;
+            case "getImeiMulti":
+                getImeiMulti(activity, result);
+                break;
+            case "getId":
+                getID(activity, result);
+                break;
+            default:
+                mResult.notImplemented();
+                break;
+        }
 
     }
 
@@ -177,4 +175,40 @@ public class ImeiPlugin implements MethodCallHandler, PluginRegistry.RequestPerm
         return false;
     }
 
+    private void attachToActivity(ActivityPluginBinding binding) {
+        this.activity = binding.getActivity();
+        this.pluginBinding = binding;
+        pluginBinding.addRequestPermissionsResultListener(this);
+    }
+
+    private void detachFromActivity() {
+        this.activity = null;
+        pluginBinding.removeRequestPermissionsResultListener(this);
+        pluginBinding = null;
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+    }
+
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        attachToActivity(binding);
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        detachFromActivity();
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+        attachToActivity(binding);
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        detachFromActivity();
+    }
 }

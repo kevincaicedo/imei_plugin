@@ -1,16 +1,20 @@
 name: imei_plugin
 description: get real IMEI for android devices with validate permission on ejecution time and get unique id on ios An alphanumeric string that uniquely identifies a device to the app’s vendor.
 version: 2.0.0
-author: Kevin Caicedo <ing.sys.kevincaicedo@gmail.com>
 homepage: https://github.com/kevincaicedo/imei_plugin
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=2.5.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
